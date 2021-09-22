@@ -8,7 +8,7 @@
 
 tStart = tic;   
 
-files = dir('5x_frsn_5_10_lat_b\*.tif');
+files = dir('*.tiff');
 
 c = fix(clock);
 xls_name = sprintf('fractals_%02d_%02d_%02d_%02d_%02d.xls',c(2),c(3),c(4),c(5),c(6));
@@ -18,13 +18,13 @@ t=0;
 count_cell_col=1;
 count_cell_num =1;
 results{count_cell_num, count_cell_col} = ('filename');
-%results{count_cell_num, count_cell_col+1}=average_dim;
+results{count_cell_num, count_cell_col+1}= ('dimension');
 
-for angle_r=1:7
-     results{count_cell_num, count_cell_col+2} =('dim %angle_r');
-     results{count_cell_num, count_cell_col+9}=('r^2 %angle_r');
-     count_cell_col=count_cell_col+1;
-end
+% for angle_r=1:7
+%      results{count_cell_num, count_cell_col+2} =['dim ' num2str(angle_r)];
+%      results{count_cell_num, count_cell_col+9}=['r^2 ' num2str(angle_r)];
+%      count_cell_col=count_cell_col+1;
+% end
 
 count_cell_col=1;
 count_cell_num =1;
@@ -96,9 +96,9 @@ sum_dim = 0;
    
     [dim, r_sq_d] = fractal_dimension_rotate_0_90_average(image_r, t, max_index);
     %results{count_cell_num,count_cell_col} = angle_r;
-    results{count_cell_num,count_cell_col} = dim;
+%     results{count_cell_num,count_cell_col} = dim;
     sum_dim = sum_dim + dim;
-    results{count_cell_num,count_cell_col+7} = r_sq_d;
+%     results{count_cell_num,count_cell_col+7} = r_sq_d;
     %results{count_cell_num,2+count_cell_col} = files(j).name;
     count_cell_col = count_cell_col+1;
     
