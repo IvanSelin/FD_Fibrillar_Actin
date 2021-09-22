@@ -1,65 +1,6 @@
-
-
 function [dim, r_sq_d] = fractal_dimension_rotate_0_90_average(image_r, t, max_index)
 
-% the image is read and first its changed to grayscale image and then to 
-% black and white
-%[folder, baseFileNameNoExt, extension] = fileparts(filename);
-%subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.01], [0.01 0.01]);
 
-% tic
-% angle = 0;
-
-%image_orig=image_r;
-
-% image_crop = imcrop(image_orig, [750 0 255 256]); % xtop ytop width height
-%image_crop = image_orig;
-%subplot(2,4,1)
-%imshow(image_crop)
-% figure;
-
-% image=rgb2gray(image_crop);
-%image_crop_blue = image_crop(:,:,3);
-
-
-% [~,threshold] = edge(image_crop_blue,'sobel');
-% fudgeFactor = 0.5;
-% BWs = edge(image_crop_blue ,'sobel',threshold * fudgeFactor);
-% imshow(BWs);
-% imshow(edge(imbinarize(image_crop_blue),'canny'));
-
-%image = imbinarize(image_crop_blue);
-%global imfilled
-%imfilled = imfill(image,'holes');
-%subplot(2,4,2)
-%imshow(imfilled);
-% figure;
-
-
-%s = regionprops(imfilled,{'Centroid','Orientation','MajorAxisLength','MinorAxisLength'});
-%max_axes = 0;
-%max_index = 1;
-%for i=1:numel(s)
-%    if (s(i).MajorAxisLength + s(i).MinorAxisLength) > max_axes
-%        max_axes = (s(i).MajorAxisLength + s(i).MinorAxisLength);
-%        max_index = i;
-%    end
-%end
-%rotation_angle = -s(max_index).Orientation;
-%angle = rem(rotation_angle,90);
-%angle2 = 90 - rem(rotation_angle,90);
-%s=s(max_index);
-
-%min_axis_x = s.Centroid(1) + [s.MinorAxisLength/2 s.MinorAxisLength/2].*[cosd(angle2) -cosd(angle2)];
-%min_axis_y = s.Centroid(2) + [s.MinorAxisLength/2 s.MinorAxisLength/2].* [-sind(angle2) sind(angle2)];
-
-%maj_axis_x = s.Centroid(1) + [s.MajorAxisLength/2 s.MajorAxisLength/2].*[cosd(angle) -cosd(angle)];
-%maj_axis_y = s.Centroid(2) + [s.MajorAxisLength/2 s.MajorAxisLength/2].* [sind(angle) -sind(angle)];
-
-%hold on
-%plot(maj_axis_x,maj_axis_y,'LineWidth',2,'Color','green');
-%plot(min_axis_x,min_axis_y,'LineWidth',2,'Color','red');
-%rotation_angle = 0;
 image_orig=image_r;
 image_crop = image_orig;
 image_crop_blue = image_crop(:,:,3);
@@ -69,7 +10,7 @@ image_rotated = image_crop;
 
 
 
-image_rotated_blue =imfilled;
+image_rotated_blue=imfilled;
 % check the orientation
 % regionprops(image_rotated_blue, 'Orientation')
 % getting the bounding box size
@@ -106,6 +47,7 @@ avg_y = round(s.Centroid(2));
 bbox_x = avg_x - box_size/2;
 bbox_y = avg_y - box_size/2;
 
+% padding the image for proper box alignment
 pixels_to_add_x_pre = ceil(bbox_x/box_size)*box_size-bbox_x;
 pixels_to_add_y_pre = ceil(bbox_y/box_size)*box_size-bbox_y;
 
@@ -168,87 +110,13 @@ count=zeros(1,box_size_power);
 image = BW3;
 image = imcomplement(image);
 
+% calculating the FD for all scale factors
 for i=box_size_power:-1:1
     sf=2^i;
 %     sepblockfun(image, [sf sf],'min');
     scale(1,i)=sf;
     count(1,i)=sum(sepblockfun(image,[sf sf],'min')==0,'all');
 end
-%for i=box_size_power:-1:1
-    % scaling factors are taken as 2,4,8,16... 512. 
-
-   % For each scaling factor, the total number of pieces are to be calculated,
-   % and the number of pieces which contain the black dots (pixels) among them are to
-   % be counted.
-
-   % For eg, when the scaling factor is 2, it means the image is divided in to
-   % half, hence we will get 4 pieces. And have to see how many of pieces
-   % have the black dots. 
-  % sf=2^i;
-%    pieces=(width/sf)^2;
- %  pieces = width/sf*height/sf;
-%   pieces_in_line = width/sf;
-%   pieceWidth=sf;
-%   pieceHeight=sf;
-
-   %initially we assume, we have 0 black pieces
- %  blackPieces=0; 
-   
-   % Now we have to iterate through each pieces to see how many pieces have the
-   % black dots (pixel) in it. We will consider the collection of pieces as
-   % a matrix. We are counting from 0 for the ease of calculations.
-%   for pieceIndex=0:pieces-1
-
-       % row and column indices of each pieces are calculated to estimate the
-       % xy cordinates of the starting and ending of each piece.
-%       pieceRow=idivide(int32(pieceIndex), int32(pieces_in_line));
-%       pieceCol=rem(pieceIndex,pieces_in_line);
-    %   xmin=(pieceCol*pieceWidth)+1;
-   %    xmax=(xmin+pieceWidth)-1;
-  %     ymin=(pieceRow*pieceHeight)+1;
- %      ymax=(ymin+pieceHeight)-1;
-
-       % each piece is extracted and stored in another array for
-       % convenience.
-%       eachPiece=image(ymin:ymax,xmin:xmax);
-       %each piece obtained is plotted on a plot for getting a view 
-       %of the splitting of the whole image.
-       %subplot(sf,sf,pieceIndex+1), imshow(eachPiece);
-
-       % now, we will check whether the piece has some black dots in it.
-       % then the count of the black pieces will be incremented.
-       %if (min(min(eachPiece))== 0)
-        %   blackPieces=blackPieces+1;
-       %end
-      % if i==box_size_power
-     %      rectangle('Position',[xmin ymin xmax ymax],'EdgeColor','r');
-    %   end
-   %end
-
-   % the count of pieces which contains the black dots for a given scaling value 
-   % will be obtained here and will be stored in the respective variables.
-%    scale = 2^(box_size_power-i)
-%    scale_factor = pieces_in_line;
-   scale_factor = sf;
-%    fprintf('%d\t->\t%d\n', sf, blackPieces);
-%    scale(1,i)=2^i;
-
-%     fprintf('%d\t->\t%d\n', scale_factor, blackPieces);
-  % scale(1,i)=scale_factor;
- %  count(1,i)=blackPieces;
-%end
-
-%subplot(2,4,7);
-%imshow(BW3);
-%hold on
-% draw the core
-%im = imshow(image_padded_blue);
-%alpha(im,0.5);
-%for i=1:width/box_size*2
-%    for j=1:height/box_size*2
-%        rectangle('Position',[(i-1)*box_size/2 (j-1)*box_size/2 box_size/2 box_size/2],'EdgeColor','r');
-%    end
-%end
 
 % Now the process is over, the graph is plotted and the fractal dimension
 % is calculated using the 'ployfit' function.
@@ -277,9 +145,5 @@ xticks ([0 : 1 : max(x_gr) ]);
 set(gcf, 'Position', get(0, 'Screensize'));
 %saveas(gcf, strcat(baseFileNameNoExt,'_plot.png'));
 close(gcf);
-
-
-% toc
-% 
 
 end
